@@ -14,7 +14,7 @@ phases:
   build:
     commands:
       - echo Building frontend...
-      - docker build -t frontend ./frontend
+      - docker build -t frontend .
       - docker tag frontend:latest 577638398727.dkr.ecr.eu-west-2.amazonaws.com/frontend:$IMAGE_TAG
       - docker tag frontend:latest 577638398727.dkr.ecr.eu-west-2.amazonaws.com/frontend:latest
 
