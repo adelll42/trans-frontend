@@ -8,23 +8,26 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 577638398727.dkr.ecr.eu-west-2.amazonaws.com
 
   build:
     commands:
       - echo Building frontend...
       - docker build -t frontend ./frontend
+      - docker tag frontend:latest 577638398727.dkr.ecr.eu-west-2.amazonaws.com/frontend:$IMAGE_TAG
       - docker tag frontend:latest 577638398727.dkr.ecr.eu-west-2.amazonaws.com/frontend:latest
 
   post_build:
     commands:
       - echo Pushing frontend image...
+      - docker push 577638398727.dkr.ecr.eu-west-2.amazonaws.com/frontend:$IMAGE_TAG
       - docker push 577638398727.dkr.ecr.eu-west-2.amazonaws.com/frontend:latest
 
-      - echo Generating imagedefinitions files...
+      - echo Generating imagedefinitions file...
       - |
-        echo '[{"name":"frontend","imageUri":"577638398727.dkr.ecr.eu-west-2.amazonaws.com/frontend:latest"}]' > frontend-imagedefinitions.json
- 
+        echo '[{"name":"FrontendContainer","imageUri":"577638398727.dkr.ecr.eu-west-2.amazonaws.com/frontend:'$IMAGE_TAG'"}]' > frontend-imagedefinitions.json
+
 artifacts:
   files:
     - frontend-imagedefinitions.json
